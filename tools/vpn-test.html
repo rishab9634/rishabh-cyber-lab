@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>VPN Leak Test</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+body{
+  background:#0b0f14;
+  color:#e5e7eb;
+  font-family:'Space Grotesk',sans-serif;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+  padding:20px;
+}
+.container{
+  width:100%;
+  max-width:480px;
+  background:rgba(15,23,42,0.95);
+  border:1px solid rgba(34,197,94,0.2);
+  border-radius:16px;
+  padding:24px;
+  text-align:center;
+}
+h1{color:#22c55e; margin-bottom:8px;}
+p{color:#9ca3af; font-size:14px; margin-bottom:18px;}
+button{
+  padding:12px 20px;
+  border:none;
+  border-radius:10px;
+  background:#22c55e;
+  color:#020617;
+  font-weight:700;
+  cursor:pointer;
+  transition:0.25s;
+}
+button:hover{
+  transform:translateY(-2px);
+  box-shadow:0 0 18px rgba(34,197,94,0.7);
+}
+#result{
+  margin-top:20px;
+  padding:14px;
+  border-radius:10px;
+  background:rgba(34,197,94,0.1);
+  display:none;
+  text-align:left;
+  font-size:14px;
+}
+.back{
+  display:block;
+  margin-top:20px;
+  color:#22c55e;
+  text-decoration:underline;
+  font-size:14px;
+}
+.note{
+  margin-top:10px;
+  font-size:12px;
+  color:#6b7280;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>VPN Leak Test</h1>
+  <p>Check if your VPN is leaking IP or DNS</p>
+
+  <button onclick="testVPN()">Test VPN</button>
+
+  <div id="result"></div>
+  <div class="note">⚠️ Client-side only, no data is sent anywhere</div>
+
+  <a class="back" href="../tools.html">← Back to Tools</a>
+</div>
+
+<script>
+async function testVPN(){
+  const result = document.getElementById("result");
+  result.style.display="block";
+  result.innerHTML="🔄 Testing... Please wait";
+
+  try{
+    // 1️⃣ Get public IP
+    const ipRes = await fetch("https://api.ipify.org?format=json");
+    const ipData = await ipRes.json();
+
+    // 2️⃣ Get DNS IP (simple test via ipapi)
+    const dnsRes = await fetch(`https://ipapi.co/json/`);
+    const dnsData = await dnsRes.json();
+
+    let status="", color="";
+
+    if(ipData.ip===dnsData.ip){
+      status="✅ No VPN Leak Detected";
+      color="#22c55e";
+    }else{
+      status="⚠️ Possible VPN / DNS Leak";
+      color="#eab308";
+    }
+
+    result.innerHTML = `
+<b>Your Public IP:</b> ${ipData.ip}<br>
+<b>Detected IP (DNS test):</b> ${dnsData.ip}<br>
+<b>Status:</b> <span style="color:${color}">${status}</span>
+`;
+
+  }catch(err){
+    result.innerHTML="❌ Error fetching data. Check internet connection";
+  }
+}
+</script>
+
+</body>
+</html>
