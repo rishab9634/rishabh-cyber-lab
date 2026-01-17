@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Text Encryption / Decryption</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
+<style>
+body{
+  background:#0b0f14;
+  color:#e5e7eb;
+  font-family:'Space Grotesk',sans-serif;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+  padding:20px;
+}
+.container{
+  width:100%;
+  max-width:460px;
+  background:rgba(15,23,42,0.95);
+  border:1px solid rgba(34,197,94,0.2);
+  border-radius:16px;
+  padding:24px;
+  text-align:center;
+}
+h1{color:#22c55e; margin-bottom:8px;}
+p{color:#9ca3af; font-size:14px; margin-bottom:18px;}
+textarea,input{
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  border:1px solid #22c55e;
+  background:#020617;
+  color:#e5e7eb;
+  font-size:14px;
+  margin-bottom:12px;
+}
+button{
+  margin-top:12px;
+  width:48%;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  background:#22c55e;
+  color:#020617;
+  font-weight:700;
+  cursor:pointer;
+  transition:0.25s;
+  margin-right:4%;
+}
+button:last-child{
+  margin-right:0;
+}
+#result{
+  margin-top:16px;
+  padding:12px;
+  border-radius:10px;
+  background:rgba(34,197,94,0.1);
+  word-break:break-all;
+  display:none;
+  font-size:14px;
+  text-align:left;
+}
+.back{
+  display:block;
+  margin-top:20px;
+  color:#22c55e;
+  text-decoration:underline;
+  font-size:14px;
+}
+.note{
+  margin-top:10px;
+  font-size:12px;
+  color:#6b7280;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>Text Encrypt / Decrypt</h1>
+  <p>Encrypt or decrypt text safely using a password</p>
+
+  <textarea id="textInput" placeholder="Enter text here..."></textarea>
+  <input type="text" id="keyInput" placeholder="Enter password/key">
+
+  <div style="display:flex; justify-content:space-between;">
+    <button onclick="encryptText()">Encrypt</button>
+    <button onclick="decryptText()">Decrypt</button>
+  </div>
+
+  <div id="result"></div>
+
+  <div class="note">🔐 Client-side only — text never leaves your browser</div>
+
+  <a class="back" href="../tools.html">← Back to Tools</a>
+</div>
+
+<script>
+function encryptText(){
+  const text = document.getElementById("textInput").value;
+  const key = document.getElementById("keyInput").value;
+  const result = document.getElementById("result");
+
+  if(!text || !key){
+    result.style.display="block";
+    result.innerText="⚠ Please enter both text and password";
+    return;
+  }
+
+  const encrypted = CryptoJS.AES.encrypt(text, key).toString();
+  result.style.display="block";
+  result.innerHTML = `<b>Encrypted Text:</b><br>${encrypted}`;
+}
+
+function decryptText(){
+  const text = document.getElementById("textInput").value;
+  const key = document.getElementById("keyInput").value;
+  const result = document.getElementById("result");
+
+  if(!text || !key){
+    result.style.display="block";
+    result.innerText="⚠ Please enter both text and password";
+    return;
+  }
+
+  try{
+    const bytes = CryptoJS.AES.decrypt(text, key);
+    const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+    if(!decrypted){
+      result.style.display="block";
+      result.innerText="❌ Incorrect password or invalid encrypted text";
+      return;
+    }
+    result.style.display="block";
+    result.innerHTML = `<b>Decrypted Text:</b><br>${decrypted}`;
+  }catch(err){
+    result.style.display="block";
+    result.innerText="❌ Error decrypting text";
+  }
+}
+</script>
+
+</body>
+</html>
