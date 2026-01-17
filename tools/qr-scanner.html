@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>QR Code Scanner</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script src="https://unpkg.com/html5-qrcode@2.3.10/html5-qrcode.min.js"></script>
+
+<style>
+body{
+  margin:0;
+  background:#0b0f14;
+  font-family:system-ui, sans-serif;
+  color:#e5e7eb;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+}
+.box{
+  width:100%;
+  max-width:420px;
+  background:#0f172a;
+  border:1px solid #22c55e40;
+  border-radius:14px;
+  padding:20px;
+  text-align:center;
+}
+h1{color:#22c55e}
+#reader{
+  margin-top:15px;
+  border-radius:12px;
+  overflow:hidden;
+}
+#status{
+  margin-top:14px;
+  font-size:14px;
+  color:#9ca3af;
+}
+#result{
+  margin-top:14px;
+  padding:10px;
+  background:#22c55e20;
+  border-radius:10px;
+  display:none;
+  word-break:break-word;
+}
+a{color:#22c55e}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+  <h1>QR Code Scanner</h1>
+  <p>Scan QR codes securely</p>
+
+  <div id="reader"></div>
+  <div id="status">📷 Waiting for camera permission...</div>
+  <div id="result"></div>
+
+  <br>
+  <a href="../tools.html">← Back to Tools</a>
+</div>
+
+<script>
+const status = document.getElementById("status");
+const resultBox = document.getElementById("result");
+
+function onScanSuccess(text){
+  resultBox.style.display="block";
+  status.innerText="✅ QR Scanned Successfully";
+
+  if(text.startsWith("http")){
+    resultBox.innerHTML=`Scanned URL:<br><a href="${text}" target="_blank">${text}</a>`;
+  }else{
+    resultBox.innerText="Scanned Text: "+text;
+  }
+  qr.stop();
+}
+
+const qr = new Html5Qrcode("reader");
+
+Html5Qrcode.getCameras().then(cameras=>{
+  if(cameras.length===0){
+    status.innerText="❌ No camera found";
+    return;
+  }
+
+  qr.start(
+    {facingMode:"environment"},
+    {fps:10, qrbox:220},
+    onScanSuccess,
+    ()=>{}
+  );
+}).catch(err=>{
+  status.innerHTML = "❌ Camera blocked<br><small>Use HTTPS (GitHub Pages)</small>";
+});
+</script>
+
+</body>
+</html>
