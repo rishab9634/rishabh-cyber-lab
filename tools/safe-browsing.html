@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Safe Browsing Checker</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+body{
+  background:#0b0f14;
+  color:#e5e7eb;
+  font-family:'Space Grotesk',sans-serif;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+  padding:20px;
+}
+.container{
+  width:100%;
+  max-width:460px;
+  background:rgba(15,23,42,0.95);
+  border:1px solid rgba(34,197,94,0.2);
+  border-radius:16px;
+  padding:24px;
+  text-align:center;
+}
+h1{color:#22c55e; margin-bottom:8px;}
+p{color:#9ca3af; font-size:14px; margin-bottom:18px;}
+input{
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  border:1px solid #22c55e;
+  background:#020617;
+  color:#e5e7eb;
+  font-size:15px;
+}
+button{
+  margin-top:16px;
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  background:#22c55e;
+  color:#020617;
+  font-weight:700;
+  cursor:pointer;
+  transition:0.25s;
+}
+button:hover{
+  transform:translateY(-2px);
+  box-shadow:0 0 18px rgba(34,197,94,0.7);
+}
+#result{
+  margin-top:20px;
+  padding:14px;
+  border-radius:10px;
+  display:none;
+  text-align:left;
+  font-size:14px;
+}
+.safe{background:#22c55e20; color:#22c55e;}
+.warning{background:#eab30820; color:#eab308;}
+.danger{background:#dc262620; color:#dc2626;}
+.back{
+  display:block;
+  margin-top:20px;
+  color:#22c55e;
+  text-decoration:underline;
+  font-size:14px;
+}
+.note{
+  margin-top:12px;
+  font-size:12px;
+  color:#6b7280;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>Safe Browsing Checker</h1>
+  <p>Check if a website is safe to visit</p>
+
+  <input type="text" id="urlInput" placeholder="https://example.com">
+  <button onclick="checkSite()">Check Site</button>
+
+  <div id="result"></div>
+
+  <div class="note">⚠️ Educational tool – no data is sent outside</div>
+
+  <a class="back" href="../tools.html">← Back to Tools</a>
+</div>
+
+<script>
+function checkSite(){
+  const url = document.getElementById("urlInput").value.trim();
+  const result = document.getElementById("result");
+
+  if(url === ""){
+    result.style.display="block";
+    result.className="danger";
+    result.innerText="Please enter a website URL";
+    return;
+  }
+
+  result.style.display="block";
+  result.innerText="🔄 Checking site...";
+
+  // Simple heuristics
+  let score = 0;
+  if(!url.startsWith("https://")) score++;
+  if(url.includes("login") || url.includes("verify") || url.includes("secure")) score++;
+
+  // Simulate basic "safe browsing" check
+  setTimeout(()=>{
+    if(score===0){
+      result.className="safe";
+      result.innerHTML="✅ Likely Safe Site";
+    }else if(score===1){
+      result.className="warning";
+      result.innerHTML="⚠️ Suspicious Site – Be careful";
+    }else{
+      result.className="danger";
+      result.innerHTML="🚨 Potentially Dangerous Site";
+    }
+  }, 600);
+}
+</script>
+
+</body>
+</html>
