@@ -1,1 +1,148 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>IP Info Checker</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Space Grotesk',sans-serif;}
+body{
+  background:#0b0f14;
+  color:#e5e7eb;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+}
+.container{
+  width:100%;
+  max-width:480px;
+  background:rgba(15,23,42,0.95);
+  border:1px solid rgba(34,197,94,0.2);
+  border-radius:16px;
+  padding:28px;
+  text-align:center;
+}
+h1{
+  color:#22c55e;
+  margin-bottom:8px;
+}
+p{
+  font-size:14px;
+  color:#9ca3af;
+  margin-bottom:18px;
+}
+input{
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  border:1px solid #22c55e;
+  background:#020617;
+  color:#e5e7eb;
+  font-size:15px;
+}
+button{
+  margin-top:16px;
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  background:#22c55e;
+  color:#020617;
+  font-weight:700;
+  cursor:pointer;
+  transition:0.25s;
+}
+button:hover{
+  transform:translateY(-2px);
+  box-shadow:0 0 18px rgba(34,197,94,0.7);
+}
+#result{
+  margin-top:20px;
+  padding:14px;
+  border-radius:10px;
+  display:none;
+  text-align:left;
+  font-size:14px;
+  background:rgba(34,197,94,0.1);
+}
+.back{
+  display:block;
+  margin-top:20px;
+  color:#22c55e;
+  text-decoration:underline;
+  font-size:14px;
+}
+.note{
+  margin-top:12px;
+  font-size:12px;
+  color:#6b7280;
+  text-align:center;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>IP Info Checker</h1>
+  <p>Enter an IP address to get location & ISP information</p>
+
+  <input type="text" id="ipInput" placeholder="8.8.8.8">
+  <button onclick="checkIP()">Check IP</button>
+
+  <div id="result"></div>
+
+  <div class="note">
+    ⚠️ Educational & informational purposes only
+  </div>
+
+  <a class="back" href="../tools.html">← Back to Tools</a>
+</div>
+
+<script>
+async function checkIP(){
+  const ip = document.getElementById("ipInput").value.trim();
+  const result = document.getElementById("result");
+
+  if(ip===""){
+    result.style.display="block";
+    result.innerHTML="⚠ Please enter an IP address";
+    return;
+  }
+
+  result.style.display="block";
+  result.innerHTML="🔄 Checking...";
+
+  try{
+    const response = await fetch(`https://ipapi.co/${ip}/json/`);
+    const data = await response.json();
+
+    if(data.error){
+      result.innerHTML = "❌ Invalid IP or API limit reached";
+      return;
+    }
+
+    result.innerHTML = `
+<b>IP:</b> ${data.ip}<br>
+<b>City:</b> ${data.city}<br>
+<b>Region:</b> ${data.region}<br>
+<b>Country:</b> ${data.country_name}<br>
+<b>Postal Code:</b> ${data.postal}<br>
+<b>Latitude:</b> ${data.latitude}<br>
+<b>Longitude:</b> ${data.longitude}<br>
+<b>ISP:</b> ${data.org}
+`;
+  }catch(err){
+    result.innerHTML = "❌ Error fetching data. Check IP or internet connection.";
+  }
+}
+</script>
+
+</body>
+</html>
