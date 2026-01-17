@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Email Header Analyzer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Space Grotesk',sans-serif}
+body{
+  background:#0b0f14;
+  color:#e5e7eb;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+.container{
+  width:100%;
+  max-width:480px;
+  background:rgba(15,23,42,0.95);
+  border:1px solid rgba(34,197,94,0.2);
+  border-radius:16px;
+  padding:26px;
+}
+h1{
+  text-align:center;
+  color:#22c55e;
+  margin-bottom:8px;
+}
+p{
+  text-align:center;
+  color:#9ca3af;
+  font-size:14px;
+  margin-bottom:18px;
+}
+textarea{
+  width:100%;
+  height:160px;
+  background:#020617;
+  color:#e5e7eb;
+  border:1px solid #22c55e;
+  border-radius:10px;
+  padding:12px;
+  font-size:13px;
+  resize:none;
+}
+button{
+  width:100%;
+  margin-top:16px;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  background:#22c55e;
+  color:#020617;
+  font-weight:700;
+  cursor:pointer;
+  transition:0.25s;
+}
+button:hover{
+  transform:translateY(-2px);
+  box-shadow:0 0 18px rgba(34,197,94,0.7);
+}
+.result{
+  margin-top:18px;
+  padding:14px;
+  border-radius:10px;
+  display:none;
+  font-size:14px;
+}
+.safe{background:#22c55e;color:#020617}
+.warn{background:#eab308;color:#020617}
+.back{
+  display:block;
+  margin-top:18px;
+  text-align:center;
+  color:#22c55e;
+  text-decoration:underline;
+  font-size:14px;
+}
+.note{
+  margin-top:12px;
+  font-size:12px;
+  color:#6b7280;
+  text-align:center;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>Email Header Analyzer</h1>
+  <p>Paste full email headers to check authenticity</p>
+
+  <textarea id="headerInput" placeholder="Paste email headers here..."></textarea>
+
+  <button onclick="analyzeHeader()">Analyze Header</button>
+
+  <div id="output" class="result"></div>
+
+  <div class="note">
+    ⚠️ Educational tool – No email data is sent anywhere
+  </div>
+
+  <a class="back" href="../tools.html">← Back to Tools</a>
+</div>
+
+<script>
+function analyzeHeader(){
+  const header = document.getElementById("headerInput").value.toLowerCase();
+  const output = document.getElementById("output");
+
+  if(header.trim() === ""){
+    output.style.display="block";
+    output.className="result warn";
+    output.innerHTML="Please paste email headers first.";
+    return;
+  }
+
+  let score = 0;
+  let findings = [];
+
+  if(header.includes("spf=pass")){
+    findings.push("✔ SPF Passed");
+  }else{
+    score++;
+    findings.push("✖ SPF Missing / Failed");
+  }
+
+  if(header.includes("dkim=pass")){
+    findings.push("✔ DKIM Passed");
+  }else{
+    score++;
+    findings.push("✖ DKIM Missing / Failed");
+  }
+
+  if(header.includes("dmarc=pass")){
+    findings.push("✔ DMARC Passed");
+  }else{
+    score++;
+    findings.push("✖ DMARC Missing / Failed");
+  }
+
+  let ipMatch = header.match(/\b\d{1,3}(\.\d{1,3}){3}\b/);
+  if(ipMatch){
+    findings.push("📡 Sender IP Found: " + ipMatch[0]);
+  }else{
+    score++;
+    findings.push("⚠ Sender IP Not Found");
+  }
+
+  output.style.display="block";
+
+  if(score <= 1){
+    output.className="result safe";
+    output.innerHTML="✅ Likely Legitimate Email<br><br>" + findings.join("<br>");
+  }else{
+    output.className="result warn";
+    output.innerHTML="⚠ Suspicious Email Header<br><br>" + findings.join("<br>");
+  }
+}
+</script>
+
+</body>
+</html>
